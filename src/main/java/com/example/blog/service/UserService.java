@@ -15,9 +15,9 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    @PostConstruct
-    public void init() {
 
+    public User getById(Long id) {
+        return userRepository.getById(id);
     }
 
     public Page<User> getAll(Pageable pageable) {

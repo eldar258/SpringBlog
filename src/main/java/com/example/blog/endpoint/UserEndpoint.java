@@ -21,6 +21,15 @@ public class UserEndpoint {
 
     private final UserService userService;
 
+    @GetMapping("/getById")
+    public ResponseEntity<UserDto> getById(@RequestParam Long id) {
+        var user = userService.getById(id);
+
+        var userDto = userToUserDto(user);
+
+        return ResponseEntity.ok(userDto);
+    }
+
     @GetMapping("/getAll")
     public ResponseEntity getAll(@PageableDefault(size = 5) Pageable pageable) {
         var page = userService.getAll(pageable);
