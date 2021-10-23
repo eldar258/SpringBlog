@@ -22,4 +22,12 @@ public class PostService {
 
         return postRepository.save(post);
     }
+
+    public Post update(Long id, String text) {
+        var post = postRepository.getById(id);
+
+        post.setText(text);
+
+        return postRepository.save(post);
+    }
 }
