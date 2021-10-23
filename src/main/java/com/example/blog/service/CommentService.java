@@ -5,6 +5,9 @@ import com.example.blog.domain.Post;
 import com.example.blog.domain.User;
 import com.example.blog.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,5 +38,15 @@ public class CommentService {
         comment.setText(text);
 
         return commentRepository.save(comment);
+    }
+
+    public Page<Comment> getCommentsByPostId(Long postId, Pageable pageable) {
+        var post = new Post();
+        post.setId(postId);
+
+        var comment = new Comment();
+        comment.setPost(post);
+
+        return commentRepository.findAll(Example.of(comment), pageable);
     }
 }
