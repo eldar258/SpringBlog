@@ -6,15 +6,30 @@ import com.example.blog.model.PostDto;
 import com.example.blog.model.UpdatePostRequest;
 import com.example.blog.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 public class PostEndpoint {
     private final PostService postService;
+
+    @GetMapping("/getUserPosts")
+    public ResponseEntity<PageImpl<PostDto>> getUserPosts(@RequestParam Long userId,
+                                                 @PageableDefault(size = 5)Pageable pageable) {
+        var page = postService.getUserPosts(userId, pageable);
+
+        var pageDtos = page.stream()
+                .map(this::postToPostDto)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(new PageImpl<>(pageDtos, pageable, page.getTotalElements()));
+    }
 
     @PostMapping("/createPost")
     public ResponseEntity<PostDto> create(@RequestBody CreatePostRequest request) {
