@@ -28,4 +28,12 @@ public class CommentService {
 
         return commentRepository.save(comment);
     }
+
+    public Comment update(Long id, String text) {
+        var comment = commentRepository.getById(id);
+
+        comment.setText(text);
+
+        return commentRepository.save(comment);
+    }
 }
