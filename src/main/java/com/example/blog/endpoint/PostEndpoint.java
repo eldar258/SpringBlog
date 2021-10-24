@@ -1,8 +1,10 @@
 package com.example.blog.endpoint;
 
 import com.example.blog.domain.Post;
+import com.example.blog.domain.Tag;
 import com.example.blog.model.CreatePostRequest;
 import com.example.blog.model.PostDto;
+import com.example.blog.model.TagDto;
 import com.example.blog.model.UpdatePostRequest;
 import com.example.blog.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -12,12 +14,14 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 public class PostEndpoint {
     private final PostService postService;
+
 
     @GetMapping("/getUserPosts")
     public ResponseEntity<PageImpl<PostDto>> getUserPosts(@RequestParam Long userId,
@@ -55,7 +59,19 @@ public class PostEndpoint {
                 .postId(post.getId())
                 .text(post.getText())
                 .userId(post.getUser().getId())
-                .tags(post.getTags())
+                .tags(tagsToTagsDto(post.getTags()))
+                .build();
+    }
+
+    private List<TagDto> tagsToTagsDto(List<Tag> tags) {
+        return tags.stream()
+                .map(this::tagToTagDto)
+                .collect(Collectors.toList());
+    }
+    private TagDto tagToTagDto(Tag tag) {
+        return TagDto.builder()
+                .id(tag.getId())
+                .name(tag.getName())
                 .build();
     }
 }

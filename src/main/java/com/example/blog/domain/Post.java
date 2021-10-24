@@ -1,6 +1,6 @@
 package com.example.blog.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,6 +19,10 @@ public class Post {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fk_user")
     private User user;
+
+    @Setter(AccessLevel.NONE)
+    @Column(name = "fk_user", insertable = false, updatable = false)
+    private Long userId;
 
     private String text;
 

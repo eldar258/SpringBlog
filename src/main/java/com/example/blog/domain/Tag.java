@@ -2,6 +2,7 @@ package com.example.blog.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -11,6 +12,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class Tag {
 
     @Id
@@ -20,13 +22,11 @@ public class Tag {
     @Column(unique = true)
     private String name;
 
-    @ManyToMany(mappedBy = "tags")
-    @JsonIgnore
-    private List<Post> posts;
+    //@ManyToMany(mappedBy = "tags")
+    //@JsonIgnore
+    //private List<Post> posts;
 
-    public void addPost(Post post) {
-        if (this.posts == null) this.posts = new ArrayList<>();
-
-        this.posts.add(post);
+    public Tag(String name) {
+        this.name = name;
     }
 }

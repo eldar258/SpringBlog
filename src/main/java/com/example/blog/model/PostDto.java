@@ -15,5 +15,5 @@ public class PostDto {
 
     private String text;
 
-    private List<Tag> tags;
+    private List<TagDto> tags;
 }

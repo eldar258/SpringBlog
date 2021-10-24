@@ -6,13 +6,12 @@ import com.example.blog.domain.Tag;
 import com.example.blog.domain.User;
 import com.example.blog.repository.PostRepository;
 import com.example.blog.repository.TagRepository;
+import com.example.blog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,46 +22,30 @@ public class PostService {
 
     private final TagRepository tagRepository;
 
-    public Page<Post> getUserPosts(Long userId, Pageable pageable) {
-        var user = new User();
-        user.setId(userId);
-        var post = new Post();
-        post.setUser(user);
+    private final UserRepository userRepository;
 
-        return postRepository.findAll(Example.of(post), pageable);
+    public Page<Post> getUserPosts(Long userId, Pageable pageable) {
+        return postRepository.findAllByUserId(userId, pageable);
     }
 
     public Post create(Long userId, String text, List<String> tagNames) {
-        var tags = getTagsWithName(tagNames);//tagNames != null ? getTagsWithName(tagNames) : List.of();
+        var tags = tagNames.stream()
+                .map(tagName -> tagRepository.findByName(tagName)
+                        .orElseGet(() -> tagRepository.saveAndFlush(new Tag(tagName))))
+                .collect(Collectors.toList());
+
 
         var post = new Post();
-        var user = new User();
-        user.setId(userId);
-        post.setUser(user);
+        post.setUser(validateUserAndGet(userId));
         post.setText(text);
-
         post.setTags(tags);
 
-        tags.forEach(tag -> tag.addPost(post));
-
-        tagRepository.saveAllAndFlush(tags);
+        //tagRepository.saveAllAndFlush(tags);
         return postRepository.save(post);
     }
-    private List<Tag> getTagsWithName(List<String> tagNames) {
-        return tagNames.stream()
-                .map(tagName -> findTagByName(getTagWithName(tagName)))
-                .collect(Collectors.toList());
-    }
-    private Tag findTagByName(Tag tag) {
-        return tagRepository.findOne(Example.of(tag)).orElse(tag);
-    }
-    private boolean isTagAbsent(Tag tag) {
-        return tagRepository.findOne(Example.of(tag)).isEmpty();
-    }
-    private Tag getTagWithName(String tagName) {
-        var tag = new Tag();
-        tag.setName(tagName);
-        return tag;
+    private User validateUserAndGet(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     public Post update(Long id, String text) {
@@ -72,4 +55,6 @@ public class PostService {
 
         return postRepository.save(post);
     }
+
+
 }
