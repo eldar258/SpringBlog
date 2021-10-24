@@ -33,7 +33,8 @@ public class PostEndpoint {
 
     @PostMapping("/createPost")
     public ResponseEntity<PostDto> create(@RequestBody CreatePostRequest request) {
-        var post = postService.create(request.getUserId(), request.getText());
+        var post = postService.create(request.getUserId(),
+                request.getText(), request.getTagNames());
 
         var postDto = postToPostDto(post);
 
@@ -54,6 +55,7 @@ public class PostEndpoint {
                 .postId(post.getId())
                 .text(post.getText())
                 .userId(post.getUser().getId())
+                .tags(post.getTags())
                 .build();
     }
 }
