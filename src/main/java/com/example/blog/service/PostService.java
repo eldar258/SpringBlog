@@ -57,4 +57,7 @@ public class PostService {
     }
 
 
+    public Page<Post> getByTag(String name, Pageable pageable) {
+        return postRepository.findAllByTagName(name, pageable);
+    }
 }
